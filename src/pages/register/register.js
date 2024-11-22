@@ -7,11 +7,27 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Estado para manejar la carga
   const navigate = useNavigate();
 
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleRegister = async () => {
+    if (!isValidEmail(email)) {
+      Swal.fire({
+        title: "Error",
+        text: "Por favor, ingresa un email válido",
+        icon: "error",
+      });
+      return;
+    }
+
     if (username !== "" && email !== "" && password !== "") {
       const body = { username, email, password };
+      setIsLoading(true); // Mostrar indicador de carga
 
       try {
         const response = await fetch("https://backendtodo-4u2b.onrender.com/api/register", {
@@ -33,8 +49,7 @@ export default function Register() {
           const errorData = await response.json();
           Swal.fire({
             title: "Error",
-            text:
-              errorData.message || "El usuario ya existe o hubo un problema",
+            text: errorData.message || "El usuario ya existe o hubo un problema",
             icon: "error",
           });
         }
@@ -44,6 +59,8 @@ export default function Register() {
           text: "Hubo un problema al conectarse con el servidor",
           icon: "error",
         });
+      } finally {
+        setIsLoading(false); // Ocultar indicador de carga
       }
     } else {
       Swal.fire({
@@ -56,6 +73,12 @@ export default function Register() {
 
   return (
     <div className="register-body">
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p className="loading-text">Cargando...</p>
+        </div>
+      )}
       <header className="register-header">
         <img src="nextPlayerLogo.png" className="register-logo" alt="Logo" />
         <a
@@ -66,13 +89,14 @@ export default function Register() {
         </a>
       </header>
       <h1>Bienvenido/a!</h1>
-      <div className="register-form">
+      <div className="register-form" style={{ opacity: isLoading ? 0.5 : 1 }}>
         <input
           type="text"
           placeholder="Usuario"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="register-input"
+          disabled={isLoading} // Deshabilitar input mientras carga
         />
         <input
           type="email"
@@ -80,6 +104,7 @@ export default function Register() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="register-input"
+          disabled={isLoading} // Deshabilitar input mientras carga
         />
         <input
           type="password"
@@ -87,8 +112,13 @@ export default function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="register-input"
+          disabled={isLoading} // Deshabilitar input mientras carga
         />
-        <button onClick={handleRegister} className="register-button">
+        <button
+          onClick={handleRegister}
+          className="register-button"
+          disabled={isLoading} // Deshabilitar botón si está cargando
+        >
           Registrarse
         </button>
         <a href="/login" className="register-login-link">
