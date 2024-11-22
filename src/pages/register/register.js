@@ -24,11 +24,11 @@ export default function Register() {
       });
       return;
     }
-
+  
     if (username !== "" && email !== "" && password !== "") {
       const body = { username, email, password };
-      setIsLoading(true); // Mostrar indicador de carga
-
+      setIsLoading(true);
+  
       try {
         const response = await fetch("https://backendtodo-4u2b.onrender.com/api/register", {
           method: "POST",
@@ -37,7 +37,7 @@ export default function Register() {
           },
           body: JSON.stringify(body),
         });
-
+  
         if (response.ok) {
           Swal.fire({
             title: "Registro exitoso",
@@ -49,7 +49,7 @@ export default function Register() {
           const errorData = await response.json();
           Swal.fire({
             title: "Error",
-            text: errorData.message || "El usuario ya existe o hubo un problema",
+            text: errorData.message || "El registro falló. Por favor, intenta nuevamente.",
             icon: "error",
           });
         }
@@ -60,7 +60,7 @@ export default function Register() {
           icon: "error",
         });
       } finally {
-        setIsLoading(false); // Ocultar indicador de carga
+        setIsLoading(false);
       }
     } else {
       Swal.fire({
@@ -70,6 +70,7 @@ export default function Register() {
       });
     }
   };
+  
 
   return (
     <div className="register-body">
