@@ -40,9 +40,10 @@ export default function Login() {
 
         if (response.ok) {
           const data = await response.json();
+          const username = data.username || "Usuario"; // Asigna un valor predeterminado si falta el username
           Swal.fire({
             title: "Inicio de sesión exitoso",
-            text: `Bienvenido, ${data.username}!`,
+            text: `Bienvenido, ${username}!`,
             icon: "success",
           });
           navigate("/tasks");
